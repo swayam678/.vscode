@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Data Visualization</h1>
+    <form id="dataForm">
+        <label for="data">Enter data (comma-separated):</label>
+        <input type="text" id="data" name="data">
+        <label for="visualizationType">Visualization Type:</label>
+        <select id="visualizationType">
+            <option value="bar">Bar</option>
+            <option value="line">Line</option>
+            <option value="pie">Pie</option>
+        </select>
+        <button type="submit">Generate Chart</button>
+    </form>
+    <canvas id="myChart" width="400" height="200"></canvas>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('dataForm');
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const data = document.getElementById('data').value.trim();
+                const visualizationType = document.getElementById('visualizationType').value;
+
+                if (!data) {
+                    console.error('No data provided');
+                    return;
+                }
+
+                const dataArray = data.split(',').map(item => Number(item.trim()));
+
+                if (isNaN(dataArray[0])) {
+                    console.error('Invalid data');
+                    return;
+                }
+
+                generateVisualization(dataArray, visualizationType);
+            });
+
+            let chart = null;
+
+            function generateVisualization(dataArray, visualizationType) {
+                const ctx = document.getElementById('myChart').getContext('2d');
+
+                if (chart) {
+                    chart.destroy(); // Destroy previous chart to avoid conflicts
+                }
+
+                const labels = dataArray.map((_, index) => `Data ${index + 1}`);
+
+                switch (visualizationType) {
+                    case 'bar':
+                        chart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels,
+                                datasets: [{
+                                    label: 'Data',
+                                    data: dataArray,
+                                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                    borderColor: 'rgba(255, 99, 132, 1)',
+                                    borderWidth: 1,
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                        break;
+                    case 'line':
+                        chart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels,
+                                datasets: [{
+                                    label: 'Data',
+                                    data: dataArray,
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    borderWidth: 1,
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                    }
+                                }
+                            }
+                        });
+                        break;
+                    case 'pie':
+                        chart = new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels,
+                                datasets: [{
+                                    data: dataArray,
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                        'rgba(255, 159, 64, 0.2)',
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 99, 132, 1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                        'rgba(255, 159, 64, 1)',
+                                    ],
+                                    borderWidth: 1,
+                                }],
+                            },
+                        });
+                        break;
+                    default:
+                        console.error('Invalid visualization type');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
